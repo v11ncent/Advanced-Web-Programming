@@ -15,7 +15,7 @@ const TEST_PLACES = [
   },
 ];
 
-const getPlacesById = (req, res, next) => {
+const getPlaceById = (req, res, next) => {
   // params property is the query string in the url
   // eg: our router path is at "api/places" so anything after places is the query string
   // eg: "api/places/294" (294 is the placeId)
@@ -31,6 +31,47 @@ const getPlacesById = (req, res, next) => {
   }
 
   res.json(place);
+};
+
+const deletePlaceById = (req, res, next) => {
+  const placeId = req.params.placeId;
+  const placeIndex = TEST_PLACES.findIndex((place) => {
+    return place.id === placeId;
+  });
+
+  TEST_PLACES.splice(placeIndex, 1);
+
+  if (placeIndex === -1) {
+    const error = new Error("Could not find place.");
+    error.code = 404;
+    return next(error);
+  }
+
+  res.json({ message: "DELETE successful." });
+};
+
+const putPlaceById = (req, res, next) => {
+  const id = req.params.placeId;
+  const placeIndex = TEST_PLACES.findIndex((place) => place.id === id);
+
+  const {
+    title = TEST_PLACES[placeIndex].title,
+    description = TEST_PLACES[placeIndex].description,
+    location = TEST_PLACES[placeIndex].location,
+    address = TEST_PLACES[placeIndex].address,
+    creatorId = TEST_PLACES[placeIndex].creatorId,
+  } = req.body;
+
+  const updatedPlace = {
+    title,
+    description,
+    location,
+    address,
+    creatorId,
+    ...req.body,
+  };
+
+  res.json({ updatedPlace: updatedPlace, message: "PUT successful." });
 };
 
 const getPlaceByUserId = (req, res, next) => {
@@ -69,6 +110,10 @@ const createPlace = (req, res, next) => {
 };
 
 // need to bundle multiple functions into a single object that holds pointers to the functions
-exports.getPlacesById = getPlacesById;
-exports.getPlaceByUserId = getPlaceByUserId;
-exports.createPlace = createPlace;
+module.exports = {
+  getPlaceById,
+  getPlaceByUserId,
+  putPlaceById,
+  deletePlaceById,
+  createPlace,
+};

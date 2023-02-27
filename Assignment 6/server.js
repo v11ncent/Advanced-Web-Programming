@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 // import our places router
-const places = require("./routers/places");
+const places = require("./routes/places");
 const app = express();
 const port = 7777;
 
